@@ -46,13 +46,7 @@ app.post("/api/convert", async (req, res) => {
       executablePath: await chromium.executablePath,
       headless: chromium.headless,
       defaultViewport: chromium.defaultViewport,
-      timeout: 0, // Disable timeout
-      slowMo: 250, // Slow down Puppeteer operations to make debugging easier
-      devtools: true, // Enable DevTools
-      ignoreHTTPSErrors: true, // Ignore HTTPS errors
-      protocolTimeout: 120000, // Increase protocol timeout (in milliseconds)
     });
-
     const page = await browser.newPage();
 
     if (viewport) {
