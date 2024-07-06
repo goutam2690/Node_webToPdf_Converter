@@ -1,7 +1,5 @@
 const express = require("express");
-const puppeteer = require("puppeteer");
-const url = require("url");
-
+const chromium = require("chrome-aws-lambda");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -42,8 +40,11 @@ app.post("/api/convert", async (req, res) => {
   }
 
   try {
-    const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    const browser = await chromium.puppeteer.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+      defaultViewport: chromium.defaultViewport,
     });
     const page = await browser.newPage();
 
@@ -93,7 +94,7 @@ app.post("/api/convert", async (req, res) => {
     console.error("Error generating PDF:", error);
 
     let errorMessage;
-    if (error instanceof puppeteer.errors.TimeoutError) {
+    if (error instanceof chromium.puppeteer.errors.TimeoutError) {
       errorMessage = "Failed to generate PDF: Page load timeout";
     } else {
       errorMessage = "Failed to generate PDF: " + error.message;
