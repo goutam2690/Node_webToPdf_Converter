@@ -46,6 +46,7 @@ app.post("/api/convert", async (req, res) => {
       headless: chromium.headless,
       defaultViewport: chromium.defaultViewport,
     });
+
     const page = await browser.newPage();
 
     if (viewport) {
@@ -53,29 +54,30 @@ app.post("/api/convert", async (req, res) => {
       await page.setViewport(viewportDimensions);
     }
 
-    await page.goto(targetUrl, { waitUntil: "networkidle2", timeout: 60000 });
+    await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 120000 });
+
+    // Optional delay to ensure page stability
+    await page.waitForTimeout(5000); // Adjust delay as needed
 
     const pdfOptions = {
       format: "A4",
       printBackground: true,
-      fullPage: true, // Capture the full page
+      fullPage: true,
       margin: {
         top: marginTop || "0px",
         right: marginRight || "0px",
         bottom: marginBottom || "0px",
         left: marginLeft || "0px",
       },
-      scale: scaleValue, // Set scale based on user input
+      scale: scaleValue,
     };
 
     const pdfBuffer = await page.pdf(pdfOptions);
 
     await browser.close();
 
-    // Extract the hostname to use as filename
     const hostname = new URL(targetUrl).hostname.replace(/^www\./, "");
 
-    // Create the JSON response
     const response = {
       ConversionCost: 1,
       Files: [
@@ -94,7 +96,7 @@ app.post("/api/convert", async (req, res) => {
     console.error("Error generating PDF:", error);
 
     let errorMessage;
-    if (error instanceof chromium.puppeteer.errors.TimeoutError) {
+    if (error.message.includes("timeout")) {
       errorMessage = "Failed to generate PDF: Page load timeout";
     } else {
       errorMessage = "Failed to generate PDF: " + error.message;
