@@ -1,5 +1,5 @@
 const express = require("express");
-const chromium = require("chrome-aws-lambda"); // Include chrome-aws-lambda
+const puppeteer = require("puppeteer");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -40,11 +40,9 @@ app.post("/api/convert", async (req, res) => {
   }
 
   try {
-    const browser = await chromium.puppeteer.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-      defaultViewport: chromium.defaultViewport,
+    const browser = await puppeteer.launch({
+      headless: true, // Set to false if you want to see the browser window
+      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required for running on some platforms like Heroku
     });
 
     const page = await browser.newPage();
@@ -55,9 +53,6 @@ app.post("/api/convert", async (req, res) => {
     }
 
     await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 120000 });
-
-    // Optional delay to ensure page stability
-    await page.waitForTimeout(5000); // Adjust delay as needed
 
     const pdfOptions = {
       format: "A4",
