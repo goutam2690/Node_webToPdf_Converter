@@ -1,5 +1,6 @@
 const express = require("express");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
+const chromium = require("chrome-aws-lambda");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -41,8 +42,15 @@ app.post("/api/convert", async (req, res) => {
 
   try {
     const browser = await puppeteer.launch({
-      headless: true, // Set to false if you want to see the browser window
-      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required for running on some platforms like Heroku
+      args: chromium.args,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+      defaultViewport: chromium.defaultViewport,
+      timeout: 0, // Disable timeout
+      slowMo: 250, // Slow down Puppeteer operations to make debugging easier
+      devtools: true, // Enable DevTools
+      ignoreHTTPSErrors: true, // Ignore HTTPS errors
+      protocolTimeout: 120000, // Increase protocol timeout (in milliseconds)
     });
 
     const page = await browser.newPage();
