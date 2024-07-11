@@ -4,7 +4,7 @@
   "main": "index.js",
   "preinstall": "npx puppeteer browsers install chrome",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",    
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
   "author": "",
@@ -17,6 +17,7 @@
     "express": "^4.19.2",
     "pdfkit": "^0.15.0",
     "puppeteer": "^22.12.1",
-    "puppeteer-core": "^10.4.0"
+    "puppeteer-core": "^10.4.0",
+    "puppeteer-pdf": "^1.2.0"
   }
 }
